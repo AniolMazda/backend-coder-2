@@ -5,7 +5,7 @@ const productsRouter = Router()
 
 const createOne = async (req,res,next) => {
     try{
-        const {method, originalURL:URL} = req
+        const {method, originalUrl:URL} = req
         const data = req.body
         const response = await productManager.createOne(data)
         res.status(201).json({response,method,URL})
@@ -16,7 +16,7 @@ const createOne = async (req,res,next) => {
 }
 const readAll = async (req,res,next) => {
     try{
-        const {method, originalURL:URL} = req
+        const {method, originalUrl:URL} = req
         const filter = req.query
         const response = await productManager.readAll(filter)
         if(response.length === 0){
@@ -32,15 +32,15 @@ const readAll = async (req,res,next) => {
 }
 const readById = async (req,res,next) => {
     try{
-        const {method, originalURL:URL} = req
-        const { id } = req.params
-        const response = await productManager.readById(id)
+        const {method, originalUrl:URL} = req
+        const { pid } = req.params
+        const response = await productManager.readById(pid)
         if(!response){
             const error = new Error("Not Found")
             error.statusCode = 404
             throw error
         }
-        res.status(201).json({response,method,URL})
+        res.status(200).json({response,method,URL})
     }
     catch(error){
         next(error)
@@ -48,10 +48,10 @@ const readById = async (req,res,next) => {
 }
 const updateById = async (req,res,next) => {
     try{
-        const {method, originalURL:URL} = req
-        const { id } = req.params
+        const {method, originalUrl:URL} = req
+        const { pid } = req.params
         const data = req.body
-        const response = await productManager.updateById(id,data)
+        const response = await productManager.updateById(pid,data)
         if(!response){
             const error = new Error("Not Found")
             error.statusCode = 404
@@ -65,9 +65,9 @@ const updateById = async (req,res,next) => {
 }
 const deleteById = async (req,res,next) => {
     try{
-        const {method, originalURL:URL} = req
-        const { id } = req.params
-        const response = await productManager.deleteById(id)
+        const {method, originalUrl:URL} = req
+        const { pid } = req.params
+        const response = await productManager.deleteById(pid)
         if(!response){
             const error = new Error("Not Found")
             error.statusCode = 404
@@ -82,8 +82,8 @@ const deleteById = async (req,res,next) => {
 
 productsRouter.post("/", createOne)
 productsRouter.get("/", readAll)
-productsRouter.get("/:getid", readById)
-productsRouter.put("/:getid", updateById)
-productsRouter.delete("/getid", deleteById)
+productsRouter.get("/:pid", readById)
+productsRouter.put("/:pid", updateById)
+productsRouter.delete("/:pid", deleteById)
 
 export default productsRouter

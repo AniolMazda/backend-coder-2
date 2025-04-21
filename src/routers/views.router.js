@@ -5,7 +5,7 @@ const viewsRouter = Router()
 
 const indexView = async (req,res) => {
     try{
-        const products = productManager.readAll()
+        const products = await productManager.readAll()
         res.status(200).render("index", {products})
     }
     catch(error){

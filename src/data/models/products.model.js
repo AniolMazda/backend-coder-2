@@ -11,7 +11,12 @@ const productSchema = new Schema(
         category:{
             type:String,
             default:"Uncategorized",
-            enum:["CDs","LPs","Shirts","Hoodies"],
+            enum:["CDs","LPs","Shirts","Hoodies","Uncategorized"],
+            index:true
+        },
+        artist:{
+            type:String,
+            required:true,
             index:true
         },
         image:{

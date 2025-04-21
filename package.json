@@ -6,15 +6,18 @@
   "type": "module",
   "scripts": {
     "start": "node ./index.js",
-    "dev": "node --watch ./index.js"
+    "dev": "node --watch ./index.js",
+    "css": "npx @tailwindcss/cli -i ./public/css/input.css -o ./public/css/output.css --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tailwindcss/cli": "^4.1.4",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.1",
     "mongoose": "^8.13.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "tailwindcss": "^4.1.4"
   }
 }
