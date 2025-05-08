@@ -4,6 +4,7 @@ import { engine } from "express-handlebars";
 import morgan from "morgan";
 import __dirname from "./utils.js";
 import dbConnect from "./src/helpers/dbConnect.helper.js"
+import cookieParser from "cookie-parser";
 import indexRouter from "./src/routers/index.router.js";
 import pathHandler from "./src/middlewares/pathHandler.mid.js";
 import errorHandler from "./src/middlewares/errorHandler.mid.js";
@@ -23,6 +24,7 @@ server.set("view engine", "handlebars");
 server.set("views", __dirname + "/src/views");
 
 /* middlewares settings */
+server.use(cookieParser(process.env.SECRET));
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.static("public"));

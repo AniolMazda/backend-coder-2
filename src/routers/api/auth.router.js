@@ -1,0 +1,83 @@
+import { Router } from "express";
+import passport from "../../middlewares/passport.mid.js";
+
+const authRouter = Router()
+
+const registerCb = async (req,res,next) => {
+    try {
+        const {method, originalUrl: url} = req
+        const { _id } = req.user
+        return res
+            .status(201)
+            .json({message:"Registered", response:_id, method, url})
+    } catch (error) {
+        next(error)
+    }
+}
+const loginCb = async (req,res,next) => {
+    try {
+        const {method, originalUrl: url} = req
+        const { _id,token } = req.user
+        return res
+            .status(200)
+            .cookie("token",token,{maxAge: 24 * 60 * 60 * 1000})
+            .json({message:"Logged In", response:_id, method, url})
+    } catch (error) {
+        next(error)
+    }
+}
+const signoutCb = (req, res, next) => {
+    try {
+        const { method, originalUrl: url } = req
+        return res.status(200).clearCookie("token").json({
+            message: "Sign out",
+            method,
+            url,
+        })
+    } catch (error) {
+      next(error);
+    }
+}
+const badAuth = (req,res,next) => {
+    try {
+        const error = new Error("bad Auth")
+        error.statusCode = 401
+        throw error
+    } catch (error) {
+        next(error)
+    }
+}
+const forbidden = (req, res, next) => {
+    try {
+        const error = new Error("Forbidden")
+        error.statusCode = 403
+        throw error
+    } catch (error) {
+        next(error);
+    }
+}
+const opts = {
+    session:false,
+    failureRedirect:"/api/auth/bad-auth"
+}
+const optsForbidden = {
+    session:false,
+    failureRedirect:"/api/auth/forbidden"
+}
+
+authRouter.post(
+    "/register",
+    passport.authenticate("register", opts),
+    registerCb
+)
+authRouter.post("/login",
+    passport.authenticate("login", opts),
+    loginCb
+)
+authRouter.post("/signout",
+    passport.authenticate("user", optsForbidden),
+    signoutCb
+)
+authRouter.get("/bad-auth",badAuth)
+authRouter.get("/forbidden",forbidden)
+export default authRouter
