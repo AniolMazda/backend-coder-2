@@ -1,8 +1,9 @@
 import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local"
+import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt"
 import { userManager } from "../data/managers/manager.mongo.js"
 import { createHash,compareHash } from "../helpers/hash.helper.js"
-import { createToken } from "../helpers/token.helper.js";
+import { createToken } from "../helpers/token.helper.js"
 
 passport.use(
     "register",
@@ -55,6 +56,52 @@ passport.use(
                 }
                 const token = createToken(data)
                 user.token = token
+                done(null,user)
+            } catch (error){
+                done(error)
+            }
+        }
+    )
+)
+passport.use(
+    "user",
+    new JwtStrategy(
+        { jwtFromRequest: ExtractJwt.fromExtractors([(req)=>req?.cookies?.token]),
+            secretOrKey:process.env.SECRET
+        },
+        async (data,done) => {
+            try{
+                const {user_id,email,role} = data
+                const user = await userManager.readBy({_id:user_id,email,role})
+                if(!user){
+                    const error = new Error("Forbidden")
+                    error.statusCode = 403
+                    throw error
+                }
+                
+                done(null,user)
+            } catch (error){
+                done(error)
+            }
+        }
+    )
+)
+passport.use(
+    "admin",
+    new JwtStrategy(
+        { jwtFromRequest: ExtractJwt.fromExtractors([(req)=>req?.cookies?.token]),
+            secretOrKey:process.env.SECRET
+        },
+        async (data,done) => {
+            try{
+                const {user_id,email,role} = data
+                const user = await userManager.readBy({_id:user_id,email,role})
+                if(!user || user.role !== "ADMIN"){
+                    const error = new Error("Forbidden")
+                    error.statusCode = 403
+                    throw error
+                }
+                
                 done(null,user)
             } catch (error){
                 done(error)

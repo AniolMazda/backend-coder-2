@@ -20,7 +20,7 @@ const loginCb = async (req,res,next) => {
         const { _id,token } = req.user
         return res
             .status(200)
-            .cookie("token",token,{maxAge: 24 * 60 * 60 * 1000})
+            .cookie("token",req.user.token,{maxAge:24 * 60 * 60 * 1000})
             .json({message:"Logged In", response:_id, method, url})
     } catch (error) {
         next(error)
@@ -36,6 +36,14 @@ const signoutCb = (req, res, next) => {
         })
     } catch (error) {
       next(error);
+    }
+}
+const onlineCb = (req, res, next) => {
+    try {
+        const { method, originalUrl: url } = req
+        return res.status(200).json({ message: "Is online", response: true, method, url })
+    }catch (error) {
+        next(error)
     }
 }
 const badAuth = (req,res,next) => {
@@ -56,7 +64,7 @@ const forbidden = (req, res, next) => {
         next(error);
     }
 }
-const opts = {
+const optsBad = {
     session:false,
     failureRedirect:"/api/auth/bad-auth"
 }
@@ -67,12 +75,16 @@ const optsForbidden = {
 
 authRouter.post(
     "/register",
-    passport.authenticate("register", opts),
+    passport.authenticate("register", optsBad),
     registerCb
 )
 authRouter.post("/login",
-    passport.authenticate("login", opts),
+    passport.authenticate("login", optsBad),
     loginCb
+)
+authRouter.post("/online",
+    passport.authenticate("user", optsForbidden),
+    onlineCb
 )
 authRouter.post("/signout",
     passport.authenticate("user", optsForbidden),

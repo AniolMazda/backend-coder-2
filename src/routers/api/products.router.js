@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { productManager } from "../../data/managers/manager.mongo.js";
+import passport from "passport";
 
 const productsRouter = Router()
 
@@ -80,10 +81,15 @@ const deleteById = async (req,res,next) => {
     }    
 }
 
-productsRouter.post("/", createOne)
+const optsForbidden = {
+    session:false,
+    failureRedirect:"/api/auth/forbidden"
+}
+
+productsRouter.post("/", passport.authenticate("admin",optsForbidden), createOne)
 productsRouter.get("/", readAll)
 productsRouter.get("/:pid", readById)
-productsRouter.put("/:pid", updateById)
-productsRouter.delete("/:pid", deleteById)
+productsRouter.put("/:pid", passport.authenticate("admin",optsForbidden), updateById)
+productsRouter.delete("/:pid", passport.authenticate("admin",optsForbidden), deleteById)
 
 export default productsRouter
