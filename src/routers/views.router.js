@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { productManager } from "../data/managers/manager.mongo.js";
+import passport from "../middlewares/passport.mid.js";
 
 const viewsRouter = Router()
 
@@ -28,9 +29,30 @@ const loginView = async (req,res) => {
         res.status(error.statusCode || 500).render("error",{error})
     }
 }
+const detailsView = async (req,res) => {
+    try{
+        const { pid } = req.params
+        const product = await productManager.readById(pid)
+        res.status(200).render("details", {product})
+    }
+    catch(error){
+        res.status(error.statusCode || 500).render("error",{error})
+    }
+}
+const profileView = async (req,res) => {
+    try{
+        const { user } = req
+        res.status(200).render("profile", {user})
+    }
+    catch(error){
+        res.status(error.statusCode || 500).render("error",{error})
+    }
+}
 
 viewsRouter.get("/", indexView)
 viewsRouter.get("/register", registerView)
 viewsRouter.get("/login", loginView)
+viewsRouter.get("/details/:pid", detailsView)
+viewsRouter.get("/profile", passport.authenticate("user",{session:false}), profileView)
 
 export default viewsRouter

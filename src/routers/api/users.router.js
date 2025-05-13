@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userManager } from "../../data/managers/manager.mongo.js";
-import passport from "passport";
+import passport from "../../middlewares/passport.mid.js";
 
 const usersRouter = Router()
 
@@ -39,9 +39,9 @@ const readById = async (req,res,next) => {
 const updateById = async (req,res,next) => {
     try{
         const {method, originalUrl:URL} = req
-        const { uid } = req.params
+        const { _id } = req.user
         const data = req.body
-        const response = await userManager.updateById(uid,data)
+        const response = await userManager.updateById(_id,data)
         if(!response){
             const error = new Error("Not Found")
             error.statusCode = 404
@@ -56,8 +56,8 @@ const updateById = async (req,res,next) => {
 const deleteById = async (req,res,next) => {
     try{
         const {method, originalUrl:URL} = req
-        const { uid } = req.params
-        const response = await userManager.deleteById(uid)
+        const { _id } = req.user
+        const response = await userManager.deleteById(_id)
         if(!response){
             const error = new Error("Not Found")
             error.statusCode = 404
@@ -86,12 +86,12 @@ usersRouter.get(
     readById
 )
 usersRouter.put(
-    "/:uid",
-    passport.authenticate("admin", optsForbidden),
+    "/",
+    passport.authenticate("user", optsForbidden),
     updateById
 )
 usersRouter.delete(
-    "/:uid",
+    "/",
     passport.authenticate("admin", optsForbidden),
     deleteById
 )

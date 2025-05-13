@@ -1,0 +1,28 @@
+<main class="py-8 flex flex-col items-center">
+    <h1 class="text-gray-800 text-4xl font-bold w-full pl-8 mb-8">Profile</h1>
+    <section class="bg-gray-100 shadow-md rounded-lg overflow-hidden w-3/4 px-6 py-6">
+    {{#with user}}
+        <div class="flex items-center justify-between space-x-6">
+            <div class="flex flex-row items-center">
+                <img class="h-24 w-24 rounded-full border-4 border-gray-300 mr-4" src="{{avatar}}" alt="Avatar de la tienda">
+                <div>
+                    {{#if name}}
+                    <h2 class="text-gray-800 font-semibold text-xl">{{name}}</h2>
+                    {{else}}
+                    <h2 class="text-gray-600 font-semibold text-xl">User</h2>
+                    {{/if}}
+                    <p class="text-gray-600 text-sm"><strong class="font-bold">City: </strong> {{city}}</p>
+                    {{#if date}}
+                    <p class="text-gray-600 text-sm"><strong class="font-bold">Birthday: </strong> {{date}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            <button class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition" id="open-update">Update User</button>
+        </div>
+        <div class="mt-6">
+            {{> updateUser}}
+        </div>
+    {{/with}}
+    </section>
+</main>
+<script src="/js/updateUser.js"></script>
