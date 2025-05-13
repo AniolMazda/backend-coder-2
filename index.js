@@ -19,7 +19,11 @@ const ready = async () => {
 server.listen(port, ready);
 
 /* engine settings */
-server.engine("handlebars", engine());
+server.engine("handlebars", engine({
+  layoutsDir: __dirname + "/src/views/layouts",
+  partialsDir: __dirname + "/src/views/partials",
+  defaultLayout: 'main'
+}));
 server.set("view engine", "handlebars");
 server.set("views", __dirname + "/src/views");
 

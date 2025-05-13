@@ -7,7 +7,9 @@ const productsRouter = Router()
 const createOne = async (req,res,next) => {
     try{
         const {method, originalUrl:URL} = req
+        const {_id} = req.user
         const data = req.body
+        data.owner_id = _id
         const response = await productManager.createOne(data)
         res.status(201).json({response,method,URL})
     }

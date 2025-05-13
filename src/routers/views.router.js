@@ -20,8 +20,17 @@ const registerView = async (req,res) => {
         res.status(error.statusCode || 500).render("error",{error})
     }
 }
+const loginView = async (req,res) => {
+    try{
+        res.status(200).render("login")
+    }
+    catch(error){
+        res.status(error.statusCode || 500).render("error",{error})
+    }
+}
 
 viewsRouter.get("/", indexView)
 viewsRouter.get("/register", registerView)
+viewsRouter.get("/login", loginView)
 
 export default viewsRouter
