@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { productManager } from "../data/managers/manager.mongo.js";
-import passport from "../middlewares/passport.mid.js";
+import passportCb from "../middlewares/passportCb.mid.js";
 
 const viewsRouter = Router()
 
@@ -53,6 +53,6 @@ viewsRouter.get("/", indexView)
 viewsRouter.get("/register", registerView)
 viewsRouter.get("/login", loginView)
 viewsRouter.get("/details/:pid", detailsView)
-viewsRouter.get("/profile", passport.authenticate("user",{session:false}), profileView)
+viewsRouter.get("/profile", passportCb("user",{session:false}), profileView)
 
 export default viewsRouter

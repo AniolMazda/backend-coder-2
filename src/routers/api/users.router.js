@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userManager } from "../../data/managers/manager.mongo.js";
-import passport from "../../middlewares/passport.mid.js";
+import passportCb from "../../middlewares/passportCb.mid.js";
 
 const usersRouter = Router()
 
@@ -70,29 +70,24 @@ const deleteById = async (req,res,next) => {
     }    
 }
 
-const optsForbidden = {
-    session:false,
-    failureRedirect:"/api/auth/forbidden"
-}
-
 usersRouter.get(
     "/",
-    passport.authenticate("admin", optsForbidden),
+    passportCb("admin"),
     readAll
 )
 usersRouter.get(
     "/:uid",
-    passport.authenticate("admin", optsForbidden),
+    passportCb("admin"),
     readById
 )
 usersRouter.put(
     "/",
-    passport.authenticate("user", optsForbidden),
+    passportCb("user"),
     updateById
 )
 usersRouter.delete(
     "/",
-    passport.authenticate("admin", optsForbidden),
+    passportCb("admin"),
     deleteById
 )
 

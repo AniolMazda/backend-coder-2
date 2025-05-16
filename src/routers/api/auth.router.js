@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport from "../../middlewares/passport.mid.js";
+import passportCb from "../../middlewares/passportCb.mid.js"
 
 const authRouter = Router()
 
@@ -20,8 +20,19 @@ const loginCb = async (req,res,next) => {
         const { _id,token } = req.user
         return res
             .status(200)
-            .cookie("token",req.user.token,{maxAge:24 * 60 * 60 * 1000})
+            .cookie("token",token,{maxAge:24 * 60 * 60 * 1000})
             .json({message:"Logged In", response:_id, method, url})
+    } catch (error) {
+        next(error)
+    }
+}
+const loginGoogle = async (req,res,next) => {
+    try {
+        const { token } = req.user
+        return res
+            .status(200)
+            .cookie("token",token,{maxAge:24 * 60 * 60 * 1000})
+            .redirect('/')
     } catch (error) {
         next(error)
     }
@@ -64,31 +75,30 @@ const forbidden = (req, res, next) => {
         next(error);
     }
 }
-const optsBad = {
-    session:false,
-    failureRedirect:"/api/auth/bad-auth"
-}
-const optsForbidden = {
-    session:false,
-    failureRedirect:"/api/auth/forbidden"
-}
 
 authRouter.post(
     "/register",
-    passport.authenticate("register", optsBad),
+    passportCb("register"),
     registerCb
 )
 authRouter.post("/login",
-    passport.authenticate("login", optsBad),
+    passportCb("login"),
     loginCb
 )
 authRouter.post("/online",
-    passport.authenticate("user", optsForbidden),
+    passportCb("user"),
     onlineCb
 )
 authRouter.post("/signout",
-    passport.authenticate("user", optsForbidden),
+    passportCb("user"),
     signoutCb
+)
+authRouter.get("/google",
+    passportCb("google",{scope:["email","profile"]}),
+)
+authRouter.get("/google/redirect",
+    passportCb("google"),
+    loginGoogle
 )
 authRouter.get("/bad-auth",badAuth)
 authRouter.get("/forbidden",forbidden)
