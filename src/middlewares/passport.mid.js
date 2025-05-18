@@ -59,48 +59,6 @@ passport.use(
     )
 )
 passport.use(
-    "user",
-    new JwtStrategy(
-        { jwtFromRequest: ExtractJwt.fromExtractors([(req)=>req?.cookies?.token]),
-            secretOrKey:process.env.SECRET
-        },
-        async (data,done) => {
-            try{
-                const {user_id,email,role} = data
-                const user = await userManager.readBy({_id:user_id,email,role})
-                if(!user){
-                    done(null,null,{message:"Forbidden",statusCode:403})
-                }
-                
-                done(null,user)
-            } catch (error){
-                done(error)
-            }
-        }
-    )
-)
-passport.use(
-    "admin",
-    new JwtStrategy(
-        { jwtFromRequest: ExtractJwt.fromExtractors([(req)=>req?.cookies?.token]),
-            secretOrKey:process.env.SECRET
-        },
-        async (data,done) => {
-            try{
-                const {user_id,email,role} = data
-                const user = await userManager.readBy({_id:user_id,email,role})
-                if(!user || user.role !== "ADMIN"){
-                    done(null,null,{message:"Forbidden",statusCode:403})
-                }
-                
-                done(null,user)
-            } catch (error){
-                done(error)
-            }
-        }
-    )
-)
-passport.use(
     "google",
     new GoogleStrategy(
         {clientID:process.env.GOOGLE_ID,clientSecret:process.env.GOOGLE_SECRET, callbackURL},

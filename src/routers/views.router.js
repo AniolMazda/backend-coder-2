@@ -1,58 +1,40 @@
-import { Router } from "express";
+import RouterHelper from "../helpers/router.helper.js";
 import { productManager } from "../data/managers/manager.mongo.js";
-import passportCb from "../middlewares/passportCb.mid.js";
-
-const viewsRouter = Router()
 
 const indexView = async (req,res) => {
-    try{
-        const products = await productManager.readAll()
-        res.status(200).render("index", {products})
-    }
-    catch(error){
-        res.status(error.statusCode || 500).render("error",{error})
-    }
+    const products = await productManager.readAll()
+    res.status(200).render("index", {products})
 }
 const registerView = async (req,res) => {
-    try{
-        res.status(200).render("register")
-    }
-    catch(error){
-        res.status(error.statusCode || 500).render("error",{error})
-    }
+    res.status(200).render("register")
 }
 const loginView = async (req,res) => {
-    try{
-        res.status(200).render("login")
-    }
-    catch(error){
-        res.status(error.statusCode || 500).render("error",{error})
-    }
+    res.status(200).render("login")
 }
 const detailsView = async (req,res) => {
-    try{
-        const { pid } = req.params
-        const product = await productManager.readById(pid)
-        res.status(200).render("details", {product})
-    }
-    catch(error){
-        res.status(error.statusCode || 500).render("error",{error})
-    }
+    const { pid } = req.params
+    const product = await productManager.readById(pid)
+    res.status(200).render("details", {product})
 }
 const profileView = async (req,res) => {
-    try{
-        const { user } = req
-        res.status(200).render("profile", {user})
+    const { user } = req
+    res.status(200).render("profile", {user})
+}
+
+class ViewsRouter extends RouterHelper{
+    constructor(){
+        super()
+        this.init()
     }
-    catch(error){
-        res.status(error.statusCode || 500).render("error",{error})
+    init = () => {
+        this.render("/",["PUBLIC"],indexView)
+        this.render("/register",["PUBLIC"],registerView)
+        this.render("/login",["PUBLIC"],loginView)
+        this.render("/details/:pid",["PUBLIC"],detailsView)
+        this.render("/profile",["USER","ADMIN"], profileView)
     }
 }
 
-viewsRouter.get("/", indexView)
-viewsRouter.get("/register", registerView)
-viewsRouter.get("/login", loginView)
-viewsRouter.get("/details/:pid", detailsView)
-viewsRouter.get("/profile", passportCb("user",{session:false}), profileView)
+const viewsRouter = new ViewsRouter().getRouter()
 
 export default viewsRouter

@@ -1,105 +1,44 @@
-import { Router } from "express";
+import RouterHelper from "../../helpers/router.helper.js"
 import passportCb from "../../middlewares/passportCb.mid.js"
 
-const authRouter = Router()
+const registerCb = async (req,res) => {
+    const { _id } = req.user
+    res.json201(_id,"Registered")
+}
+const loginCb = async (req,res) => {
+    const { _id,token } = req.user
+    res.cookie("token",token,{maxAge:24 * 60 * 60 * 1000})
+        .json200(_id,"Logged In")
+}
+const loginGoogle = async (req,res) => {
+    const { token } = req.user
+    res.status(200)
+        .cookie("token",token,{maxAge:24 * 60 * 60 * 1000})
+        .redirect('/')
+}
+const signoutCb = (req, res) => {
+    res.clearCookie("token").json200(req.user._id,"Sign Out")
+}
+const onlineCb = (req, res) => res.json200(null,"Is Online")
+const badAuth = (req,res) => res.json401()
+const forbidden = (req, res) => res.json403()
 
-const registerCb = async (req,res,next) => {
-    try {
-        const {method, originalUrl: url} = req
-        const { _id } = req.user
-        return res
-            .status(201)
-            .json({message:"Registered", response:_id, method, url})
-    } catch (error) {
-        next(error)
+class AuthRouter extends RouterHelper{
+    constructor(){
+        super()
+        this.init()
     }
-}
-const loginCb = async (req,res,next) => {
-    try {
-        const {method, originalUrl: url} = req
-        const { _id,token } = req.user
-        return res
-            .status(200)
-            .cookie("token",token,{maxAge:24 * 60 * 60 * 1000})
-            .json({message:"Logged In", response:_id, method, url})
-    } catch (error) {
-        next(error)
-    }
-}
-const loginGoogle = async (req,res,next) => {
-    try {
-        const { token } = req.user
-        return res
-            .status(200)
-            .cookie("token",token,{maxAge:24 * 60 * 60 * 1000})
-            .redirect('/')
-    } catch (error) {
-        next(error)
-    }
-}
-const signoutCb = (req, res, next) => {
-    try {
-        const { method, originalUrl: url } = req
-        return res.status(200).clearCookie("token").json({
-            message: "Sign out",
-            method,
-            url,
-        })
-    } catch (error) {
-      next(error);
-    }
-}
-const onlineCb = (req, res, next) => {
-    try {
-        const { method, originalUrl: url } = req
-        return res.status(200).json({ message: "Is online", response: true, method, url })
-    }catch (error) {
-        next(error)
-    }
-}
-const badAuth = (req,res,next) => {
-    try {
-        const error = new Error("bad Auth")
-        error.statusCode = 401
-        throw error
-    } catch (error) {
-        next(error)
-    }
-}
-const forbidden = (req, res, next) => {
-    try {
-        const error = new Error("Forbidden")
-        error.statusCode = 403
-        throw error
-    } catch (error) {
-        next(error);
+    init = () => {
+        this.create("/register",["PUBLIC"],passportCb("register"),registerCb)
+        this.create("/login",["PUBLIC"],passportCb("login"),loginCb)
+        this.create("/online",["USER","ADMIN"],onlineCb)
+        this.create("/signout",["USER","ADMIN"],signoutCb)
+        this.read("/google",["PUBLIC"],passportCb("google",{scope:["email","profile"]}))
+        this.read("/google/redirect",["PUBLIC"],passportCb("google"),loginGoogle)
+        this.read("/bad-auth",["PUBLIC"],badAuth)
+        this.read("/forbidden",["PUBLIC"],forbidden)
     }
 }
 
-authRouter.post(
-    "/register",
-    passportCb("register"),
-    registerCb
-)
-authRouter.post("/login",
-    passportCb("login"),
-    loginCb
-)
-authRouter.post("/online",
-    passportCb("user"),
-    onlineCb
-)
-authRouter.post("/signout",
-    passportCb("user"),
-    signoutCb
-)
-authRouter.get("/google",
-    passportCb("google",{scope:["email","profile"]}),
-)
-authRouter.get("/google/redirect",
-    passportCb("google"),
-    loginGoogle
-)
-authRouter.get("/bad-auth",badAuth)
-authRouter.get("/forbidden",forbidden)
+const authRouter = new AuthRouter().getRouter()
 export default authRouter
