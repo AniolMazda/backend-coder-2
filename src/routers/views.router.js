@@ -1,25 +1,5 @@
 import RouterHelper from "../helpers/router.helper.js";
-import { productManager } from "../data/managers/manager.mongo.js";
-
-const indexView = async (req,res) => {
-    const products = await productManager.readAll()
-    res.status(200).render("index", {products})
-}
-const registerView = async (req,res) => {
-    res.status(200).render("register")
-}
-const loginView = async (req,res) => {
-    res.status(200).render("login")
-}
-const detailsView = async (req,res) => {
-    const { pid } = req.params
-    const product = await productManager.readById(pid)
-    res.status(200).render("details", {product})
-}
-const profileView = async (req,res) => {
-    const { user } = req
-    res.status(200).render("profile", {user})
-}
+import {indexView,registerView,loginView,detailsView,profileView} from "../controllers/views.controller.js"
 
 class ViewsRouter extends RouterHelper{
     constructor(){
