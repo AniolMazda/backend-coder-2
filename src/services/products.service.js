@@ -1,9 +1,9 @@
-import { productManager } from "../data/managers/manager.mongo.js"
+import productsRepository from "../repositories/products.repository.js"
 
-const createOneService = async(data) => await productManager.createOne(data)
-const readAllService = async(filter) => await productManager.readAll(filter)
-const readByIdService = async(id) => await productManager.readById(id)
-const updateByIdService = async(id,data) => await productManager.updateById(id,data)
-const deleteByIdService = async(id) => await productManager.deleteById(id)
+const createOneService = async(data) => await productsRepository.createOne(data)
+const readAllService = async(filter) => await productsRepository.readAll(filter)
+const readByIdService = async(id) => await productsRepository.readById(id)
+const updateByIdService = async(id,data) => await productsRepository.updateById(id,data)
+const deleteByIdService = async(id) => await productsRepository.deleteById(id)
 
 export {createOneService, readAllService, readByIdService, updateByIdService, deleteByIdService}

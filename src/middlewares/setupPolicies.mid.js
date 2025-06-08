@@ -1,4 +1,4 @@
-import { userManager } from "../data/managers/manager.mongo.js"
+import usersRepository from "../repositories/users.repository.js"
 import { verifyToken } from "../helpers/token.helper.js"
 
 const seputPolicies = (policies) => async (req,res,next) => {
@@ -14,7 +14,7 @@ const seputPolicies = (policies) => async (req,res,next) => {
             ADMIN:policies.includes("ADMIN")
         }
         if(!allowedRoles[role]) return res.json401()
-        const user = await userManager.readById(user_id)
+        const user = await usersRepository.readById(user_id)
         req.user = user
         next()
     } catch (error) {

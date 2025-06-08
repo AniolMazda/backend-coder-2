@@ -2,8 +2,8 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local"
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt"
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
-import { userManager } from "../data/managers/manager.mongo.js"
-import { createHash,compareHash } from "../helpers/hash.helper.js"
+import usersRepository from "../repositories/users.repository.js";
+import { compareHash } from "../helpers/hash.helper.js"
 import { createToken } from "../helpers/token.helper.js"
 
 const callbackURL = "http://localhost:8080/api/auth/google/redirect"
@@ -17,12 +17,11 @@ passport.use(
                 if(!req.body.city){
                     done(null,null,{message:"Invalid Data",statusCode:400})
                 }
-                let user = await userManager.readBy({email})
+                let user = await usersRepository.readBy({email})
                 if (user){
                     done(null,null,{message:"Invalid Credentials",statusCode:401})
                 }
-                req.body.password = createHash(password)
-                user = await userManager.createOne(req.body)
+                user = await usersRepository.createOne(req.body)
                 done(null,user)
             } catch (error) {
                 done(error)
@@ -36,7 +35,7 @@ passport.use(
         { passReqToCallback:true, usernameField:"email" },
         async (req,email,password,done) => {
             try{
-                let user = await userManager.readBy({email})
+                let user = await usersRepository.readBy({email})
                 if (!user){
                     done(null,null,{message:"Invalid Credentials",statusCode:401})
                 }
@@ -65,16 +64,16 @@ passport.use(
         async(accessToken, refreshToken, profile, done) => {
             try {
                 const {email,name,picture,id} = profile
-                let user = await userManager.readBy({email:id})
+                let user = await usersRepository.readBy({email:id})
                 if(!user){
                     user = {
                         email:id,
                         name:name.givenName,
                         avatar:picture,
-                        password:createHash(email),
+                        password:email,
                         city:"Google"
                     }
-                    user = await userManager.createOne(user)
+                    user = await usersRepository.createOne(user)
                 }
                 const data = {
                     user_id: user._id,
