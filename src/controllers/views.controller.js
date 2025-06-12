@@ -23,5 +23,17 @@ const verifyView = async (req,res) => {
     const {email} = req.params
     res.status(200).render("verify",{email})
 }
+const recoveryView = async (req,res) => {
+    res.status(200).render("recoveryPassword")
+}
+const resetView = async (req,res) => {
+    const {email} = req.params
+    const {recovery} = req.cookies
+    if(email === recovery){
+        res.status(200).render("resetPassword",{email})
+    }else{
+        res.status(200).render("recoveryPassword")
+    }
+}
 
-export {indexView,registerView,loginView,detailsView,profileView,verifyView}
+export {indexView,registerView,loginView,detailsView,profileView,verifyView,resetView,recoveryView}
