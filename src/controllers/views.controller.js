@@ -19,5 +19,9 @@ const profileView = async (req,res) => {
     const { user } = req
     res.status(200).render("profile", {user})
 }
+const verifyView = async (req,res) => {
+    const {email} = req.params
+    res.status(200).render("verify",{email})
+}
 
-export {indexView,registerView,loginView,detailsView,profileView}
+export {indexView,registerView,loginView,detailsView,profileView,verifyView}

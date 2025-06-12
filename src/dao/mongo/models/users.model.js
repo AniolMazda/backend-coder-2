@@ -27,7 +27,12 @@ const userSchema = new Schema(
             default: "USER",
             enum: ["USER", "ADMIN", "PREM"],
             index:true
-        }
+        },
+        isVerify:{
+            type:Boolean,
+            default:false
+        },
+        verifyCode:String
     },
     {
         timestamps:true

@@ -8,6 +8,7 @@ import argvsHerper from "./src/helpers/argvs.helper.js"
 import indexRouter from "./src/routers/index.router.js";
 import pathHandler from "./src/middlewares/pathHandler.mid.js";
 import errorHandler from "./src/middlewares/errorHandler.mid.js";
+import cors from "cors"
 
 /* server settings */
 const server = express();
@@ -32,6 +33,10 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.static("public"));
 server.use(morgan("dev"));
+server.use(cors({
+  origin:true,
+  credentials:true
+}))
 
 /* router settings */
 server.use("/", indexRouter);

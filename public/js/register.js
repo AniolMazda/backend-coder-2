@@ -16,7 +16,11 @@ document.querySelector("#register").addEventListener("click", async()=>{
         const url = "api/auth/register"
         let response = await fetch(url, opts)
         response = await response.json()
-        console.log(opts)
+        if(response.error){
+            alert(response.error)
+        }else{
+            location.replace("/login")
+        }
     }
     catch(err){
         console.error(err.message)

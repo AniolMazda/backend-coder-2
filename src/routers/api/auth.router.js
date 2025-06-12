@@ -1,6 +1,6 @@
 import RouterHelper from "../../helpers/router.helper.js"
 import passportCb from "../../middlewares/passportCb.mid.js"
-import { registerCb,loginCb,onlineCb,signoutCb,loginGoogle,badAuth,forbidden } from "../../controllers/auth.controller.js"
+import { registerCb,loginCb,onlineCb,signoutCb,loginGoogle,badAuth,forbidden,verifyUserCb } from "../../controllers/auth.controller.js"
 
 class AuthRouter extends RouterHelper{
     constructor(){
@@ -16,6 +16,7 @@ class AuthRouter extends RouterHelper{
         this.read("/google/redirect",["PUBLIC"],passportCb("google"),loginGoogle)
         this.read("/bad-auth",["PUBLIC"],badAuth)
         this.read("/forbidden",["PUBLIC"],forbidden)
+        this.read("/verify/:email/:verifyCode",["PUBLIC"],verifyUserCb)
     }
 }
 

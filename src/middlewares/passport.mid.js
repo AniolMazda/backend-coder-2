@@ -5,6 +5,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth2";
 import usersRepository from "../repositories/users.repository.js";
 import { compareHash } from "../helpers/hash.helper.js"
 import { createToken } from "../helpers/token.helper.js"
+import verifyEmail from "../helpers/verifyEmail.helper.js";
 
 const callbackURL = "http://localhost:8080/api/auth/google/redirect"
 
@@ -22,6 +23,7 @@ passport.use(
                     done(null,null,{message:"Invalid Credentials",statusCode:401})
                 }
                 user = await usersRepository.createOne(req.body)
+                await verifyEmail(user.email,user.verifyCode)
                 done(null,user)
             } catch (error) {
                 done(error)
@@ -42,6 +44,13 @@ passport.use(
                 const verifyPass = compareHash(password, user.password)
                 if (!verifyPass){
                     done(null,null,{message:"Invalid Credentials",statusCode:401})
+                }
+                const {isVerify} = user
+                if(!isVerify){
+                    return done(null,null,{
+                        message:"Please Verify Your Account",
+                        statusCode:401
+                    })
                 }
                 const data = {
                     user_id: user._id,
@@ -74,6 +83,7 @@ passport.use(
                         city:"Google"
                     }
                     user = await usersRepository.createOne(user)
+                    await verifyEmail(user.email,user.verifyCode)
                 }
                 const data = {
                     user_id: user._id,

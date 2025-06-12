@@ -1,5 +1,5 @@
 import RouterHelper from "../helpers/router.helper.js";
-import {indexView,registerView,loginView,detailsView,profileView} from "../controllers/views.controller.js"
+import {indexView,registerView,loginView,detailsView,profileView,verifyView} from "../controllers/views.controller.js"
 
 class ViewsRouter extends RouterHelper{
     constructor(){
@@ -12,6 +12,7 @@ class ViewsRouter extends RouterHelper{
         this.render("/login",["PUBLIC"],loginView)
         this.render("/details/:pid",["PUBLIC"],detailsView)
         this.render("/profile",["USER","ADMIN"], profileView)
+        this.render("/verify/:email",["PUBLIC"],verifyView)
     }
 }
 
